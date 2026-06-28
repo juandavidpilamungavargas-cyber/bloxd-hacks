@@ -105,7 +105,7 @@
     const g = {
         p: (id) => a(() => G.n.entities.getState(id, "position").position),
         pl: () => a(() => { const ids = G.bp?.getPlayerIds?.(); return ids ? Object.values(ids).map(Number).filter(id => id !== 1) :[]; },[]),
-        hg: () => a(() => v(G.n.entities).find(f => typeof f === "function" && f.length === 1 && f.toString().length < 80 && f.toString().includes(").") && !f.toString().includes("opWrapper")), null),
+        hg: () => a(() => v(G.n.entities).find(f => typeof f === "function" && f.length === 1 && f.toString().length < 80 && f.toString().includes(").") && !f.toString().includes("opWrapper")), n),
         sh: (id) => { const getter = g.hg(); return getter ? a(() => getter(id), null) : null; },
         getBlockID: (x, y, z) => { try { const names = Object.getOwnPropertyNames(G.n.constructor.prototype); return G.n[names[4]](x, y, z); } catch { return 0; } },
         at: () => {
@@ -159,7 +159,7 @@
                 }
                 if (!this._hudElement) {
                     this._hudElement = document.createElement('div');
-                    this._hudElement.style = 'position: fixed; top: 65%; left: 50%; transform: translate(-50%, -50%); width: 240px; background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 15px; color: white; font-family: "Montserrat", sans-serif; z-index: 1000000; pointer-events: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);';
+                    this._hudElement.style = 'position: fixed; top: 65%; left: 50%; transform: translate(-50%, -50%); width: 240px; background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 12px; z-index: 999999; font-family: Segoe UI, Arial, sans-serif; font-size: 11px; color: #e4e4e7; backdrop-filter: blur(10px);';
                     document.body.appendChild(this._hudElement);
                 }
                 this._hudElement.style.display = 'block';
@@ -421,7 +421,6 @@
                         if (G.n?.inputs?.state) {
                             G.n.inputs.state.jump = 1;
                             if (mv._hadJumpInputPrevTick !== undefined) mv._hadJumpInputPrevTick = false;
-                            if (mv.isInAir !== undefined) mv.isInAir = false;
                         }
                         this._lastJump = now;
                     } else {
@@ -761,13 +760,11 @@
             settings: [],
             onChange: function(enabled) {
                 if (enabled) {
-                    // Mostrar pantalla de carga falsa para simular un bypass limpio
                     const blocker = document.createElement('div');
-                    blocker.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;color:#a855f7;z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;font-size:24px;font-weight:bold;";
+                    blocker.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;color:#a855f7;z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial;font-size:18px;";
                     blocker.innerHTML = "<div>🐺 WOLF JUAN CLIENT</div><div style='font-size:14px;color:#fff;margin-top:10px;'>Bypassing Ban Evasion & Purging Identifiers...</div>";
                     document.body.appendChild(blocker);
 
-                    // 1. PURGA ULTRA DE COOKIES (Borrando perfiles en dominios cruzados)
                     const cookies = document.cookie.split(";");
                     for (let i = 0; i < cookies.length; i++) {
                         const name = cookies[i].split("=")[0].trim();
@@ -776,19 +773,16 @@
                         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.bloxd.io";
                     }
 
-                    // 2. DESTRUCCIÓN ABSOLUTA DE LOCAL STORAGE (Elimina ID Player y configuraciones de cuenta)
                     try {
                         localStorage.clear();
                         Object.keys(localStorage).forEach(k => localStorage.removeItem(k));
                     } catch(e) {}
 
-                    // 3. DESTRUCCIÓN ABSOLUTA DE SESSION STORAGE (Borrando vms--user_session_id)
                     try {
                         sessionStorage.clear();
                         Object.keys(sessionStorage).forEach(k => sessionStorage.removeItem(k));
                     } catch(e) {}
 
-                    // 4. ANHILACIÓN DE INDEXEDDB (Donde Bloxd guarda perfiles, logs de baneos y datos persistentes del juego)
                     try {
                         if (window.indexedDB && typeof window.indexedDB.databases === 'function') {
                             window.indexedDB.databases().then(dbs => {
@@ -797,13 +791,11 @@
                                 });
                             });
                         }
-                        // Borrado forzado de bases de datos comunes del motor del juego
                         window.indexedDB.deleteDatabase("BloxdDatabase");
                         window.indexedDB.deleteDatabase("localforage");
                         window.indexedDB.deleteDatabase("firebaseLocalStorageDb");
                     } catch(e) {}
 
-                    // 5. CACHÉ STORAGE PURGE (Evita el tracking por service workers modificados)
                     try {
                         if (window.caches) {
                             window.caches.keys().then(keys => {
@@ -812,7 +804,6 @@
                         }
                     } catch(e) {}
 
-                    // 6. DESASOCIAR SERVICE WORKERS ACTIVOS
                     try {
                         if (navigator.serviceWorker) {
                             navigator.serviceWorker.getRegistrations().then(regs => {
@@ -821,7 +812,6 @@
                         }
                     } catch(e) {}
 
-                    // 7. EJECUTAR REINICIO TOTAL TRAS LIMPIEZA
                     setTimeout(() => {
                         window.location.replace(window.location.origin + "?nocache=" + Date.now());
                     }, 1200);
@@ -830,7 +820,6 @@
         }
     };
 
-    // Inicializar Hacks
     const Hacks = {};
     Object.keys(moduleDefinitions).forEach(key => {
         const def = moduleDefinitions[key];
@@ -847,9 +836,6 @@
         };
     });
 
-    // ================================================================
-    // HUD
-    // ================================================================
     const HUD = {
         el: null, items: new Map(),
         init() {
@@ -864,7 +850,7 @@
             for (const n of active) {
                 if (!this.items.has(n)) {
                     const el = document.createElement('div'); el.textContent = n;
-                    el.style.cssText = `background:rgba(0,0,0,0.65);color:#fff;font-size:10px;font-weight:700;font-family:'Segoe UI',Arial,sans-serif;padding:3px 8px;border-radius:4px;backdrop-filter:blur(4px);white-space:nowrap;border:1.5px solid transparent;border-image:linear-gradient(90deg,#00BFFF,#FFD700,#FF4444)1;animation:wjc-hud 2s linear infinite;letter-spacing:0.5px;`;
+                    el.style.cssText = `background:rgba(0,0,0,0.65);color:#fff;font-size:10px;font-weight:700;font-family:'Segoe UI',Arial,sans-serif;padding:3px 8px;border-radius:4px;backdrop-filter:blur(4px);border:1px solid rgba(168,85,247,0.3);animation:wjc-hud 3s infinite;`;
                     this.el.appendChild(el); this.items.set(n, { el });
                 }
             }
@@ -874,9 +860,6 @@
     hudStyle.textContent = `@keyframes wjc-hud{0%{border-image:linear-gradient(90deg,#00BFFF,#FFD700,#FF4444)1}33%{border-image:linear-gradient(90deg,#FFD700,#FF4444,#00BFFF)1}66%{border-image:linear-gradient(90deg,#FF4444,#00BFFF,#FFD700)1}100%{border-image:linear-gradient(90deg,#00BFFF,#FFD700,#FF4444)1}}`;
     document.head.appendChild(hudStyle);
 
-    // ================================================================
-    // BOTÓN DEL LOBO
-    // ================================================================
     const wolfBtn = document.createElement('button');
     wolfBtn.textContent = '🐺';
     wolfBtn.style.cssText = `
@@ -931,19 +914,16 @@
         }
     });
 
-    // ================================================================
-    // INTERFAZ DEL MENÚ
-    // ================================================================
     const overlay = document.createElement('div'); overlay.id = 'wjc-overlay';
     overlay.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999998;display:none;pointer-events:none;`;
     document.body.appendChild(overlay);
 
     const title = document.createElement('div'); title.id = 'wjc-title'; title.textContent = 'Wolf Juan Client';
-    title.style.cssText = `position:fixed;top:10px;left:10px;z-index:999999;font-family:'Segoe UI',Arial,sans-serif;font-size:${32*SCALE}px;font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.5);letter-spacing:1px;user-select:none;cursor:default;display:block;pointer-events:none;`;
+    title.style.cssText = `position:fixed;top:10px;left:10px;z-index:999999;font-family:'Segoe UI',Arial,sans-serif;font-size:${32*SCALE}px;font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.5);color:#a855f7;display:none;`;
     document.body.appendChild(title);
 
     const container = document.createElement('div'); container.id = 'wolf-juan-client';
-    container.style.cssText = `position:fixed;top:${60*SCALE}px;left:${10*SCALE}px;z-index:999999;font-family:'Segoe UI',Arial,sans-serif;user-select:none;display:none;transition:all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);transform:perspective(1000px) rotateX(-90deg);transform-origin:top center;opacity:0;`;
+    container.style.cssText = `position:fixed;top:${60*SCALE}px;left:${10*SCALE}px;z-index:999999;font-family:'Segoe UI',Arial,sans-serif;user-select:none;display:none;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);max-height:80vh;overflow-y:auto;`;
 
     const catCont = document.createElement('div');
     catCont.style.cssText = `display:flex;flex-direction:row;gap:${40*SCALE}px;align-items:flex-start;`;
@@ -981,7 +961,7 @@
 
         const btn = document.createElement('button');
         btn.textContent = cn;
-        btn.style.cssText = `background:transparent;color:white;border:2px solid rgba(255,255,255,0.3);padding:${20*SCALE}px ${30*SCALE}px;font-size:${22*SCALE}px;font-weight:bold;cursor:pointer;border-radius:8px;letter-spacing:1px;transition:all 0.2s;min-width:${130*SCALE}px;backdrop-filter:blur(5px);white-space:nowrap;`;
+        btn.style.cssText = `background:transparent;color:white;border:2px solid rgba(255,255,255,0.3);padding:${20*SCALE}px ${30*SCALE}px;font-size:${22*SCALE}px;font-weight:bold;cursor:pointer;border-radius:6px;transition:all 0.3s;`;
         bp[cn] = { x:0, y:0 };
         btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(255,255,255,0.2)'; btn.style.borderColor = 'rgba(255,255,255,0.6)'; });
         btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; btn.style.borderColor = 'rgba(255,255,255,0.3)'; });
@@ -999,295 +979,118 @@
 
             const hb = document.createElement('button');
             hb.textContent = hk.name;
-            hb.style.cssText = `background:transparent;color:white;border:2px solid rgba(255,255,255,0.3);padding:${10*SCALE}px ${15*SCALE}px;font-size:${15*SCALE}px;font-weight:bold;cursor:pointer;border-radius:6px;letter-spacing:1px;transition:all 0.3s;flex:1;backdrop-filter:blur(5px);text-align:left;`;
-
-            let kb = null;
-            if (!isMobile) {
-                kb = document.createElement('button');
-                kb.textContent = hk.keybind || 'None';
-                kb.style.cssText = `background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2);padding:${6*SCALE}px ${8*SCALE}px;font-size:${10*SCALE}px;font-weight:bold;cursor:pointer;border-radius:4px;letter-spacing:1px;transition:all 0.2s;backdrop-filter:blur(5px);flex-shrink:0;min-width:${38*SCALE}px;text-align:center;font-family:monospace;margin-left:${38*SCALE}px;`;
-            }
-
-            let ab = null, ho = null;
-            if (hd.s && hk.settings && hk.settings.length > 0) {
-                ab = document.createElement('button');
-                ab.textContent = '▶';
-                ab.style.cssText = `background:transparent;color:rgba(255,255,255,0.6);border:2px solid rgba(255,255,255,0.3);padding:${10*SCALE}px ${10*SCALE}px;font-size:${13*SCALE}px;font-weight:bold;cursor:pointer;border-radius:6px;transition:all 0.3s;backdrop-filter:blur(5px);flex-shrink:0;min-width:${32*SCALE}px;`;
-                ho = document.createElement('div');
-                ho.style.cssText = `display:none;flex-direction:column;gap:${6*SCALE}px;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:${8*SCALE}px;margin-top:${4*SCALE}px;width:100%;transition:all 0.3s cubic-bezier(0.68,-0.55,0.265,1.55);transform:perspective(500px) rotateX(-90deg);transform-origin:top center;opacity:0;`;
-            }
-
-            let ex = false;
-            hb.addEventListener('click', (e) => {
-                e.stopPropagation();
+            hb.style.cssText = `background:${hk.enabled?'rgba(168,85,247,0.3)':'transparent'};color:white;border:1px solid ${hk.enabled?'rgba(168,85,247,0.8)':'rgba(255,255,255,0.2)'};padding:${8*SCALE}px ${12*SCALE}px;font-size:${12*SCALE}px;font-weight:600;cursor:pointer;border-radius:4px;flex:1;transition:all 0.2s;font-family:'Segoe UI',Arial,sans-serif;`;
+            hb.addEventListener('click', () => {
                 hk.enabled = !hk.enabled;
-                if (hk.onChange) hk.onChange.call(hk, hk.enabled);
-                updateBtnStyle();
+                if (hk.onChange) hk.onChange(hk.enabled);
+                hb.style.background = hk.enabled ? 'rgba(168,85,247,0.3)' : 'transparent';
+                hb.style.borderColor = hk.enabled ? 'rgba(168,85,247,0.8)' : 'rgba(255,255,255,0.2)';
                 HUD.update();
-                resetRainbowSync();
-                saveSettings();
             });
-
-            if (kb) {
-                kb.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const oldText = kb.textContent;
-                    kb.textContent = '...';
-                    kb.style.background = 'rgba(255,100,0,0.5)';
-                    const keyHandler = (ev) => {
-                        ev.stopPropagation(); ev.preventDefault();
-                        let newKey = ev.key.toUpperCase();
-                        if (newKey === 'ESCAPE') { kb.textContent = oldText; }
-                        else if (newKey === 'BACKSPACE' || newKey === 'DELETE') { hk.keybind = 'None'; kb.textContent = 'None'; }
-                        else if (newKey.length === 1 || newKey.startsWith('F')) { hk.keybind = newKey; kb.textContent = newKey; }
-                        else { kb.textContent = oldText; }
-                        kb.style.background = 'rgba(0,0,0,0.5)';
-                        window.removeEventListener('keydown', keyHandler, true);
-                        saveSettings();
-                    };
-                    window.addEventListener('keydown', keyHandler, true);
-                });
-            }
-
-            if (ab && ho) {
-                ab.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    ex = !ex;
-                    ho.style.display = ex ? 'flex' : 'none';
-                    ab.textContent = ex ? '▼' : '▶';
-                    if (ex) {
-                        setTimeout(() => { ho.style.transform = 'perspective(500px) rotateX(0deg)'; ho.style.opacity = '1'; }, 10);
-                    } else {
-                        ho.style.transform = 'perspective(500px) rotateX(-90deg)'; ho.style.opacity = '0';
-                    }
-                });
-            }
-
-            function updateBtnStyle() {
-                if (hk.enabled) {
-                    hb.style.background = 'linear-gradient(90deg,#00BFFF,#FFD700,#FF4444,#00BFFF)';
-                    hb.style.backgroundSize = '300% 100%';
-                    hb.style.color = 'white';
-                    hb.style.borderColor = 'transparent';
-                    hb.style.animation = 'wjc-rb 2s linear infinite';
-                    hb.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
-                } else {
-                    hb.style.background = 'transparent';
-                    hb.style.color = 'white';
-                    hb.style.borderColor = 'rgba(255,255,255,0.3)';
-                    hb.style.animation = 'none';
-                    hb.style.textShadow = 'none';
-                }
-            }
-
-            if (ho && hk.settings) {
-                hk.settings.forEach((st, idx) => {
-                    if (st.type === 'range') {
-                        const r = document.createElement('div');
-                        r.style.cssText = `display:flex;flex-direction:column;gap:${4*SCALE}px;color:white;font-size:${13*SCALE}px;`;
-                        const displayVal = getDisplayVal(hk, st);
-                        r.innerHTML = `<div style="display:flex;justify-content:space-between;"><span>${st.name}</span><span id="sv-${hd.k}-${idx}">${displayVal}</span></div><input type="range" min="${st.min}" max="${st.max}" step="${st.step||1}" value="${st.val}" data-mod="${hd.k}" data-idx="${idx}" style="width:100%;accent-color:#00BFFF;">`;
-                        const vs = r.querySelector('span:last-child');
-                        const slider = r.querySelector('input');
-                        slider.addEventListener('input', (e) => {
-                            st.val = parseFloat(e.target.value);
-                            vs.textContent = getDisplayVal(hk, st);
-                        });
-                        slider.addEventListener('change', () => saveSettings());
-                        ho.appendChild(r);
-                    } else if (st.type === 'toggle') {
-                        const r = document.createElement('div');
-                        r.style.cssText = `display:flex;justify-content:space-between;align-items:center;color:white;font-size:${13*SCALE}px;`;
-                        r.innerHTML = `<span>${st.name}</span><div class="wjc-tg" style="width:${40*SCALE}px;height:${20*SCALE}px;background:${st.val?'#00BFFF':'#555'};border-radius:${20*SCALE}px;cursor:pointer;position:relative;"><div style="width:${16*SCALE}px;height:${16*SCALE}px;background:white;border-radius:50%;position:absolute;top:${2*SCALE}px;left:${st.val?22*SCALE:2*SCALE}px;transition:all 0.3s;"></div></div>`;
-                        const tg = r.querySelector('.wjc-tg'), cr = tg.querySelector('div');
-                        tg.addEventListener('click', () => {
-                            st.val = !st.val;
-                            tg.style.background = st.val ? '#00BFFF' : '#555';
-                            cr.style.left = st.val ? `${22*SCALE}px` : `${2*SCALE}px`;
-                            saveSettings();
-                        });
-                        ho.appendChild(r);
-                    }
-                });
-            }
-
+            hb.addEventListener('mouseenter', () => { hb.style.background = hk.enabled?'rgba(168,85,247,0.5)':'rgba(255,255,255,0.1)'; });
+            hb.addEventListener('mouseleave', () => { hb.style.background = hk.enabled?'rgba(168,85,247,0.3)':'transparent'; });
             hr.appendChild(hb);
-            if (kb) hr.appendChild(kb);
-            if (ab) hr.appendChild(ab);
+
+            if (hk.hasSettings && hk.settings.length > 0) {
+                const sb = document.createElement('button');
+                sb.textContent = '⚙️';
+                sb.style.cssText = `background:transparent;color:white;border:1px solid rgba(255,255,255,0.2);padding:${6*SCALE}px ${10*SCALE}px;font-size:${14*SCALE}px;cursor:pointer;border-radius:4px;transition:all 0.2s;`;
+                sb.addEventListener('click', () => {
+                    const settingsPanel = document.getElementById(`settings-${hd.k}`);
+                    if (settingsPanel) {
+                        settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'flex' : 'none';
+                    }
+                });
+                sb.addEventListener('mouseenter', () => { sb.style.background = 'rgba(255,255,255,0.1)'; });
+                sb.addEventListener('mouseleave', () => { sb.style.background = 'transparent'; });
+                hr.appendChild(sb);
+            }
+
             sm.appendChild(hr);
-            if (ho) sm.appendChild(ho);
+
+            if (hk.hasSettings && hk.settings.length > 0) {
+                const sp = document.createElement('div');
+                sp.id = `settings-${hd.k}`;
+                sp.style.cssText = `display:none;flex-direction:column;gap:${4*SCALE}px;background:rgba(0,0,0,0.4);padding:${8*SCALE}px;border-radius:4px;margin-top:${4*SCALE}px;border-left:3px solid rgba(168,85,247,0.5);`;
+
+                hk.settings.forEach(st => {
+                    const sr = document.createElement('div');
+                    sr.style.cssText = `display:flex;flex-direction:column;gap:${2*SCALE}px;`;
+
+                    const sl = document.createElement('label');
+                    sl.textContent = st.name;
+                    sl.style.cssText = `font-size:${10*SCALE}px;color:rgba(255,255,255,0.7);font-weight:600;`;
+                    sr.appendChild(sl);
+
+                    if (st.type === 'range') {
+                        const sc = document.createElement('div');
+                        sc.style.cssText = `display:flex;gap:${4*SCALE}px;align-items:center;`;
+
+                        const input = document.createElement('input');
+                        input.type = 'range';
+                        input.min = st.min;
+                        input.max = st.max;
+                        input.step = st.step;
+                        input.value = st.val;
+                        input.style.cssText = `flex:1;cursor:pointer;`;
+                        input.addEventListener('input', (e) => {
+                            st.val = parseFloat(e.target.value);
+                        });
+                        sc.appendChild(input);
+
+                        const val = document.createElement('span');
+                        val.textContent = getDisplayVal(hk, st);
+                        val.style.cssText = `font-size:${10*SCALE}px;color:#a855f7;font-weight:bold;min-width:${40*SCALE}px;text-align:right;`;
+                        input.addEventListener('input', (e) => {
+                            st.val = parseFloat(e.target.value);
+                            val.textContent = getDisplayVal(hk, st);
+                        });
+                        sc.appendChild(val);
+
+                        sr.appendChild(sc);
+                    } else if (st.type === 'toggle') {
+                        const tog = document.createElement('input');
+                        tog.type = 'checkbox';
+                        tog.checked = st.val;
+                        tog.style.cssText = `cursor:pointer;width:${16*SCALE}px;height:${16*SCALE}px;`;
+                        tog.addEventListener('change', (e) => { st.val = e.target.checked; });
+                        sr.appendChild(tog);
+                    }
+
+                    sp.appendChild(sr);
+                });
+
+                sm.appendChild(sp);
+            }
         });
 
         cw.appendChild(btn);
         cw.appendChild(sm);
-        makeDraggable(cw, cn);
         catCont.appendChild(cw);
     });
-
-    function resetRainbowSync() {
-        document.querySelectorAll('[style*="wjc-rb"]').forEach(b => {
-            b.style.animation = 'none';
-            b.offsetHeight;
-            b.style.animation = 'wjc-rb 2s linear infinite';
-        });
-    }
 
     container.appendChild(catCont);
     document.body.appendChild(container);
 
-    function makeDraggable(el, nm) {
-        let d = false, sx, sy;
-        el.addEventListener('mousedown', (e) => {
-            if (e.target.tagName !== 'INPUT' && !e.target.closest('.wjc-tg')) {
-                d = true;
-                sx = e.clientX - (bp[nm].x || 0);
-                sy = e.clientY - (bp[nm].y || 0);
-                el.style.zIndex = '1000000';
-                e.preventDefault();
-            }
-        });
-        document.addEventListener('mousemove', (e) => {
-            if (d) {
-                bp[nm].x = e.clientX - sx;
-                bp[nm].y = e.clientY - sy;
-                el.style.transform = `translate(${bp[nm].x}px,${bp[nm].y}px)`;
-            }
-        });
-        document.addEventListener('mouseup', () => {
-            if (d) { d = false; el.style.zIndex = ''; }
-        });
-    }
-
-    // ================================================================
-    // VISIBILIDAD
-    // ================================================================
-    let menuVisible = false;
-    function openMenu() {
-        if (menuVisible) return;
-        menuVisible = true;
-        overlay.style.display = 'block';
-        container.style.display = 'block';
-        setTimeout(() => {
-            container.style.transform = 'perspective(1000px) rotateX(0deg)';
-            container.style.opacity = '1';
-        }, 10);
-        startRainbow();
-    }
-    function closeMenu() {
-        if (!menuVisible) return;
-        menuVisible = false;
-        container.style.transform = 'perspective(1000px) rotateX(-90deg)';
-        container.style.opacity = '0';
-        setTimeout(() => {
-            container.style.display = 'none';
-            overlay.style.display = 'none';
-        }, 400);
-        stopRainbow();
-    }
     function toggleMenu() {
-        menuVisible ? closeMenu() : openMenu();
+        const isVisible = container.style.display !== 'none';
+        container.style.display = isVisible ? 'none' : 'flex';
+        title.style.display = isVisible ? 'none' : 'block';
+        overlay.style.display = isVisible ? 'none' : 'block';
+        overlay.style.pointerEvents = isVisible ? 'none' : 'auto';
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'ShiftRight') {
-            e.preventDefault();
-            toggleMenu();
-            return;
-        }
-        const key = e.code.replace('Key', '').toUpperCase();
-        for (const [hk, h] of Object.entries(Hacks)) {
-            if (h.keybind && h.keybind !== 'None' && h.keybind.toUpperCase() === key) {
-                h.enabled = !h.enabled;
-                if (h.onChange) h.onChange.call(h, h.enabled);
-                HUD.update();
-                resetRainbowSync();
-                saveSettings();
-            }
-        }
-    });
-
-    overlay.addEventListener('click', () => closeMenu());
-
-    // ================================================================
-    // RAINBOW
-    // ================================================================
-    const rc = ['#00BFFF','#FFD700','#FF4444'];
-    let rp = 0, ra;
-    function startRainbow() { if (!ra) { rp = 0; animR(); } }
-    function stopRainbow() { if (ra) { cancelAnimationFrame(ra); ra = null; } }
-    function animR() {
-        const t = document.getElementById('wjc-title');
-        if (!t) return;
-        const seg = rc.length, si = Math.floor(rp), ni = (si+1)%seg, p = rp - si;
-        const c1 = hexToRgb(rc[si]), c2 = hexToRgb(rc[ni]);
-        t.style.color = `rgb(${Math.round(c1.r+(c2.r-c1.r)*p)},${Math.round(c1.g+(c2.g-c1.g)*p)},${Math.round(c1.b+(c2.b-c1.b)*p)})`;
-        rp += 0.02;
-        if (rp >= seg) rp = 0;
-        ra = requestAnimationFrame(animR);
-    }
-    function hexToRgb(h) {
-        const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
-        return r ? { r: parseInt(r[1],16), g: parseInt(r[2],16), b: parseInt(r[3],16) } : { r:0,g:0,b:0 };
-    }
-    const bs = document.createElement('style');
-    bs.textContent = `@keyframes wjc-rb{0%{background-position:0% 50%}100%{background-position:300% 50%}}`;
-    document.head.appendChild(bs);
-
-    // ================================================================
-    // GUARDADO
-    // ================================================================
-    function saveSettings() {
-        const data = {};
-        for (const key in Hacks) {
-            data[key] = {
-                enabled: Hacks[key].enabled,
-                keybind: Hacks[key].keybind,
-                settings: Hacks[key].settings ? Hacks[key].settings.map(s => ({ name: s.name, val: s.val })) : []
-            };
-        }
-        localStorage.setItem('wolf_juan_settings', JSON.stringify(data));
-    }
-
-    function loadSettings() {
-        try {
-            const saved = localStorage.getItem('wolf_juan_settings');
-            if (!saved) return;
-            const data = JSON.parse(saved);
-            for (const key in data) {
-                if (Hacks[key]) {
-                    Hacks[key].enabled = data[key].enabled || false;
-                    Hacks[key].keybind = data[key].keybind || 'None';
-                    if (data[key].settings && Hacks[key].settings) {
-                        data[key].settings.forEach(savedS => {
-                            const currentS = Hacks[key].settings.find(s => s.name === 'SavedS.name');
-                            if (currentS) currentS.val = savedS.val;
-                        });
-                    }
-                    if (Hacks[key].enabled && Hacks[key].onChange) {
-                        Hacks[key].onChange.call(Hacks[key], true);
-                    }
-                }
-            }
-        } catch(e) {}
-    }
-
-    // ================================================================
-    // GAME LOOP
-    // ================================================================
-    HUD.init();
-    loadSettings();
+    overlay.addEventListener('click', toggleMenu);
 
     setInterval(() => {
-        if (!G.n) { G.init(); return; }
-        for (const key in Hacks) {
-            const hack = Hacks[key];
-            if (hack.enabled && hack.onTick) {
-                hack.onTick.call(hack);
+        if (!G.n) return;
+        for (const [k, h] of Object.entries(Hacks)) {
+            if (h.enabled && h.onTick) {
+                try { h.onTick(); } catch(e) {}
             }
         }
         HUD.update();
-    }, 20);
+    }, 16);
 
-    startRainbow();
-    console.log('%c🐺 Wolf Juan Client %c¡Funcionando! Clic en el lobo o Shift Derecho.', 'color:#00BFFF;font-size:16px;', 'color:#FFD700;');
+    HUD.init();
 })();
